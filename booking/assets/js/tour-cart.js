@@ -28,6 +28,16 @@ jQuery(document).ready(function(){
         tzbooking_check_product_available_people_cart();
     });
 
+    jQuery('.input-number').each(function(){
+        inputNumber(jQuery(this));
+    });
+
+    jQuery('.product-adults, .product-kids, .product-fnr').on('change', function(){
+        tzbooking_check_product_available_people_cart();
+        jQuery('.delete-cart-btn').addClass('tz-btn-hide');
+        jQuery('.update-cart-btn').removeClass('tz-btn-hide');
+    });
+
     jQuery('.update-cart-btn').on("click", function(e){
         e.preventDefault();
         jQuery('input[name="action"]').val('tzbooking_product_update_cart');
@@ -38,7 +48,6 @@ jQuery(document).ready(function(){
             success: function(response){
                 if (response.success == 1) {
                     location.reload();
-                    console.log(response.uid);
                 } else {
                     alert(response.message);
                 }
@@ -66,8 +75,9 @@ jQuery(document).ready(function(){
         });
     });
 
-    jQuery('.input-number').each(function(){
-        inputNumber(jQuery(this));
+    jQuery('.book-now-btn').on("click", function(e){
+        e.preventDefault();
+        document.location.href=jQuery("#product-cart").attr('action');
     });
 });
 
@@ -152,6 +162,12 @@ function tzbooking_check_product_available_people_cart(){
         kids_number = parseInt( booking_form.find('input[name="kids"]').val() );
     }
 
+    /* FNR Number */
+    var fnr_number     = 0;
+    if ( booking_form.find('input[name="fnr"]').length ) {
+        fnr_number = parseInt( booking_form.find('input[name="fnr"]').val() );
+    }
+
     var people_available = '';
     if( booking_form.find('input[name="people_available"]').length ){
         people_available = parseInt( booking_form.find('input[name="people_available"]').val() );
@@ -171,7 +187,7 @@ function tzbooking_check_product_available_people_cart(){
             booking_form.find('.update-cart-btn').removeClass('tz-btn-disable');
         }
     }else{
-        if( people_available !== '' && people_available < adults_number + kids_number ){
+        if( people_available !== '' && people_available < adults_number + kids_number + fnr_number ){
             booking_form.find('.book-number-available').html(people_available);
             booking_form.find('p.book-message').css('display','block');
             booking_form.find('.book-now-btn').addClass('tz-btn-disable');

@@ -157,63 +157,49 @@ function tzbooking_product_check_availability_ajax(){
 function tzbooking_update_product_price( obj ) {
     var booking_form    = obj.closest('.tz-product-booking');
     var tour_data       = booking_form.find(".tz-booking-data");
-    var adults_price    = tour_data.data("adults-price");
-    var child_price     = tour_data.data("child-price");
-    var fnr_price       = tour_data.data("fnr-price");
-    var decimal_prec    = tour_data.data("decimal-prec");
+    var adults_price    = parseFloat(tour_data.data("adults-price")) || 0;
+    var child_price     = parseFloat(tour_data.data("child-price")) || 0;
+    var fnr_price       = parseFloat(tour_data.data("fnr-price")) || 0;
+    var decimal_prec    = parseInt(tour_data.data("decimal-prec")) || 0;
     var decimal_sep     = tour_data.data("decimal-sep");
     var thousands_sep   = tour_data.data("thousands-sep");
 
     /* Adult Number */
     var adults_number   = 0;
     if ( booking_form.find('input[name="number_adults"]').length ) {
-        adults_number   = parseInt( booking_form.find('input[name="number_adults"]').val() );
+        adults_number   = parseInt( booking_form.find('input[name="number_adults"]').val() ) || 0;
     }
 
     /* Kids Number */
     var kids_number     = 0;
     if ( booking_form.find('input[name="number_children"]').length ) {
-        kids_number = parseInt( booking_form.find('input[name="number_children"]').val() );
+        kids_number = parseInt( booking_form.find('input[name="number_children"]').val() ) || 0;
     }
 
     /* FNR Number */
     var fnr_number     = 0;
     if ( booking_form.find('input[name="number_fnr"]').length ) {
-        fnr_number = parseInt( booking_form.find('input[name="number_fnr"]').val() );
+        fnr_number = parseInt( booking_form.find('input[name="number_fnr"]').val() ) || 0;
     }
 
     if( adults_number >= 0 && kids_number >= 0 && fnr_number >= 0 ){
+        /*  Calculate prices   */
+        var total_adults_price = adults_price * adults_number;
+        var total_child_price = child_price * kids_number;
+        var total_fnr_price = fnr_price * fnr_number;
+        var total_all_price = total_adults_price + total_child_price + total_fnr_price;
 
-        /*  Get price   */
-        var total_adults_price = +(adults_price * adults_number).toFixed(2);
-        var total_child_price = +(child_price * kids_number).toFixed(2);
-        var total_fnr_price = +(fnr_price * fnr_number).toFixed(2);
-        var total_all_price = +(total_adults_price + total_child_price + total_fnr_price).toFixed(2);
+        /*  Format prices   */
+        var formatted_adults_price = tzbooking_number_format(total_adults_price, decimal_prec, decimal_sep, thousands_sep);
+        var formatted_child_price = tzbooking_number_format(total_child_price, decimal_prec, decimal_sep, thousands_sep);
+        var formatted_fnr_price = tzbooking_number_format(total_fnr_price, decimal_prec, decimal_sep, thousands_sep);
+        var formatted_all_price = tzbooking_number_format(total_all_price, decimal_prec, decimal_sep, thousands_sep);
 
-        /*  format price   */
-        total_adults_price = tzbooking_number_format(total_adults_price,decimal_prec,decimal_sep,thousands_sep);
-        total_child_price = tzbooking_number_format(total_child_price,decimal_prec,decimal_sep,thousands_sep);
-        total_fnr_price = tzbooking_number_format(total_fnr_price,decimal_prec,decimal_sep,thousands_sep);
-        total_all_price = tzbooking_number_format(total_all_price,decimal_prec,decimal_sep,thousands_sep);
-
-        /*  replace text   */
-        if(thousands_sep===' '){
-            var text_adults_price = booking_form.find('.total_price_adults').text().replace(/[\d\ \.]+/g, total_adults_price);
-            var text_child_price = booking_form.find('.total_price_children').text().replace(/[\d\ \.]+/g, total_child_price);
-            var text_fnr_price = booking_form.find('.total_price_fnr').text().replace(/[\d\ \.]+/g, total_fnr_price);
-            var text_all_price = booking_form.parents().find('.total_all_price').text().replace(/[\d\ \.]+/g, total_all_price);
-        }else{
-            var text_adults_price = booking_form.find('.total_price_adults').text().replace(/[\d\.\,]+/g, total_adults_price);
-            var text_child_price = booking_form.find('.total_price_children').text().replace(/[\d\.\,]+/g, total_child_price);
-            var text_fnr_price = booking_form.find('.total_price_fnr').text().replace(/[\d\.\,]+/g, total_fnr_price);
-            var text_all_price = booking_form.parents().find('.total_all_price').text().replace(/[\d\.\,]+/g, total_all_price);
-        }
-
-        /*  Get text   */
-        booking_form.find('.total_price_adults').text(text_adults_price);
-        booking_form.find('.total_price_children').text(text_child_price);
-        booking_form.find('.total_price_fnr').text(text_fnr_price);
-        booking_form.parents().find('.total_all_price').text(text_all_price);
+        /* Update price displays */
+        booking_form.find('.total_price_adults').html(formatted_adults_price);
+        booking_form.find('.total_price_children').html(formatted_child_price);
+        booking_form.find('.total_price_fnr').html(formatted_fnr_price);
+        booking_form.find('.total_all_price').html(formatted_all_price);
     }
 }
 

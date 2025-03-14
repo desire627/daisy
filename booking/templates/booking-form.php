@@ -113,23 +113,20 @@ $tzbooking_thousands_sep  = get_option('options_ap_price_thousands_sep', ',');
             <div class="tz-product-total-price">
             <?php esc_html_e('Total:','travelami');?>
                 <span class="total-price">
-                    <span class="total_all_price"> <?php
-                        if($tzbooking_adult_price != ''){
+                    <span class="total_all_price">
+                        <?php
+                        $tzbooking_total_price = 0;
+                        if($tzbooking_adult_price != '') {
                             $tzbooking_total_price = $tzbooking_adult_price;
-                            echo AP_Helper::format_price($tzbooking_total_price);
-                        }elseif($tzbooking_child_price != ''){
-                            $tzbooking_total_price = $tzbooking_child_price;
-                            echo AP_Helper::format_price($tzbooking_total_price);
-                        }elseif($tzbooking_fnr_price != ''){
-                            $tzbooking_total_price = $tzbooking_fnr_price;
-                            echo AP_Helper::format_price($tzbooking_total_price);
                         }
-                        ?></span>
+                        echo AP_Helper::format_price($tzbooking_total_price);
+                        ?>
+                    </span>
                 </span>
             </div>
             <?php } ?>
             <button type="submit" class="btn_full book-now templaza-btn"><?php esc_html_e('Book This Tour','travelami');?></button>
         </form>
     </div>
-    <div class="tz-booking-data" data-adults-price="<?php if($tzbooking_adult_price != ''){ echo esc_attr( $tzbooking_adult_price ); }else{ echo '0';} ?>" data-child-price="<?php if($tzbooking_child_price != ''){ echo esc_attr( $tzbooking_child_price ); }else{ echo '0';} ?>" data-fnr-price="<?php if($tzbooking_fnr_price != ''){ echo esc_attr( $tzbooking_fnr_price ); }else{ echo '0';} ?>"  data-decimal-prec="<?php echo esc_attr($tzbooking_decimal_prec); ?>" data-decimal-sep="<?php echo esc_attr($tzbooking_decimal_sep); ?>" data-thousands-sep="<?php echo esc_attr($tzbooking_thousands_sep); ?>"  data-departure-time='<?php echo json_encode($tzbooking_departure_time );?>'></div>
+    <div class="tz-booking-data" data-adults-price="<?php if($tzbooking_adult_price != ''){ echo esc_attr( $tzbooking_adult_price ); }else{ echo '0';} ?>" data-child-price="<?php if($tzbooking_child_price != ''){ echo esc_attr( $tzbooking_child_price ); }else{ echo '0';} ?>" data-fnr-price="<?php if($tzbooking_fnr_price != ''){ echo esc_attr( $tzbooking_fnr_price ); }else{ echo '0';} ?>" data-decimal-prec="<?php echo esc_attr($tzbooking_decimal_prec); ?>" data-decimal-sep="<?php echo esc_attr($tzbooking_decimal_sep); ?>" data-thousands-sep="<?php echo esc_attr($tzbooking_thousands_sep); ?>" data-departure-time='<?php echo json_encode($tzbooking_departure_time );?>'></div>
 </div>

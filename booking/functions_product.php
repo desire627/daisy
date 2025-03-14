@@ -613,13 +613,13 @@ if ( ! function_exists( 'tzbooking_get_product_confirm_page' ) ) {
 }
 
 if ( ! function_exists( 'tzbooking_product_calc_product_price' ) ) {
-    function tzbooking_product_calc_product_price( $tzbooking_post_id, $tzbooking_date='', $tzbooking_adults=1, $tzbooking_kids=0, $tzbooking_seniors=0 ) {
+    function tzbooking_product_calc_product_price( $tzbooking_post_id, $tzbooking_date='', $tzbooking_adults=1, $tzbooking_kids=0, $tzbooking_fnr=0 ) {
         if ( !class_exists( 'TemPlazaFramework\TemPlazaFramework' )){
             $templaza_options = array();
         }else{
             $templaza_options = Functions::get_theme_options();
         }
-        $tzbooking_person_price = $tzbooking_child_price = $tzbooking_senior_price = '';
+        $tzbooking_person_price = $tzbooking_child_price = $tzbooking_fnr_price = '';
         $adult_price  = isset($templaza_options['ap_product_data_price'])?$templaza_options['ap_product_data_price']:'';
         if($adult_price){
             $tzbooking_person_price = get_field($adult_price, $tzbooking_post_id);
@@ -628,15 +628,15 @@ if ( ! function_exists( 'tzbooking_product_calc_product_price' ) ) {
         if($child_price){
             $tzbooking_child_price = get_field($child_price, $tzbooking_post_id);
         }
-        $senior_price  = isset($templaza_options['ap_product_data_senior_price'])?$templaza_options['ap_product_data_senior_price']:'';
-        if($senior_price){
-            $tzbooking_senior_price = get_field($senior_price, $tzbooking_post_id);
+        $fnr_price  = isset($templaza_options['ap_product_data_fnr_price'])?$templaza_options['ap_product_data_fnr_price']:'';
+        if($fnr_price){
+            $tzbooking_fnr_price = get_field($fnr_price, $tzbooking_post_id);
         }
         if ( empty( $tzbooking_person_price ) ) $tzbooking_person_price = 0;
         if ( empty( $tzbooking_child_price ) ) $tzbooking_child_price = 0;
-        if ( empty( $tzbooking_senior_price ) ) $tzbooking_senior_price = 0;
+        if ( empty( $tzbooking_fnr_price ) ) $tzbooking_fnr_price = 0;
         
-        $tzbooking_total = $tzbooking_person_price * $tzbooking_adults + $tzbooking_child_price * $tzbooking_kids + $tzbooking_senior_price * $tzbooking_seniors;
+        $tzbooking_total = $tzbooking_person_price * $tzbooking_adults + $tzbooking_child_price * $tzbooking_kids + $tzbooking_fnr_price * $tzbooking_fnr;
         return $tzbooking_total;
     }
 }
@@ -1922,44 +1922,50 @@ if ( ! function_exists( 'tzbooking_product_update_cart' ) ) {
         $tzbooking_product_id = $_POST['product_id'];
         $tzbooking_date = $_POST['date'];
         $tzbooking_time = $_POST['time'];
+        $tzbooking_adults = $_POST['adults'];
+        $tzbooking_kids = $_POST['kids'];
+        $tzbooking_fnr = $_POST['fnr'];
         $tzbooking_first_name = $_POST['first_name'];
-        $tzbooking_last_name = '';
+        $tzbooking_last_name = $_POST['last_name'];
         $tzbooking_email = $_POST['your_email'];
         $tzbooking_phone = $_POST['your_phone'];
-        $tzbooking_total_adults = 222;
-        $tzbooking_total_kids = 1111;
-        $tzbooking_name_combo = ( isset( $_POST['name_combo'] ) ) ? $_POST['name_combo'] : '';
-        $tzbooking_people_combo = ( isset( $_POST['people_combo'] ) ) ? $_POST['people_combo'] : '';
-        $tzbooking_price_combo = ( isset( $_POST['price_combo'] ) ) ? $_POST['price_combo'] : 0;
-        $tzbooking_adults = ( isset( $_POST['adults'] ) ) ? $_POST['adults'] : 1;
-        $tzbooking_kids = ( isset( $_POST['kids'] ) ) ? $_POST['kids'] : 0;
-        $total_price = tzbooking_product_calc_product_price( $tzbooking_product_id, $tzbooking_date, $tzbooking_adults, $tzbooking_kids );
-        if( $tzbooking_price_combo != '' && $tzbooking_price_combo != 'custom' ){
-            $total_price = intval($tzbooking_price_combo);
-        }
-//		$tzbooking_uid = $tzbooking_product_id . $tzbooking_date;
+        $tzbooking_name_combo = $_POST['name_combo'];
+        $tzbooking_people_combo = $_POST['people_combo'];
+        $tzbooking_price_combo = $_POST['price_combo'];
+        $tzbooking_price_adults = $_POST['price_adults'];
+        $tzbooking_price_child = $_POST['price_child'];
+        $tzbooking_price_fnr = $_POST['price_fnr'];
+        $tzbooking_total_adults = $_POST['total_adults'];
+        $tzbooking_total_kids = $_POST['total_kids'];
+        $tzbooking_total_fnr = $_POST['total_fnr'];
+        $total_price = $_POST['total_price'];
         $tzbooking_uid = $tzbooking_product_id . str_replace( array('/') , '', $tzbooking_date )  . str_replace( array(':') , '', $tzbooking_time );
-        $cart_data = array();
 
-        // function
-        $tzbooking_product_data = array();
-        $tzbooking_product_data['adults'] 	    = $tzbooking_adults;
-        $tzbooking_product_data['kids'] 		= $tzbooking_kids;
-        $tzbooking_product_data['product_id'] 	    = $tzbooking_product_id;
-        $tzbooking_product_data['date']         = $tzbooking_date;
-        $tzbooking_product_data['time']         = $tzbooking_time;
-        $tzbooking_product_data['first_name']   = $tzbooking_first_name;
-        $tzbooking_product_data['last_name']    = $tzbooking_last_name;
-        $tzbooking_product_data['email']        = $tzbooking_email;
-        $tzbooking_product_data['phone']        = $tzbooking_phone;
-        $tzbooking_product_data['name_combo']   = $tzbooking_name_combo;
-        $tzbooking_product_data['people_combo'] = $tzbooking_people_combo;
-        $tzbooking_product_data['price_combo']  = $tzbooking_price_combo;
-        $tzbooking_product_data['total_price']  = $total_price;
-        $tzbooking_product_data['total_adults'] = $tzbooking_total_adults;
-        $tzbooking_product_data['total_kids']   = $tzbooking_total_kids;
-        TZbooking_Session_Cart::tzbooking_set( $tzbooking_uid, $tzbooking_product_data );
-        wp_send_json( array( 'success'=>1, 'message'=>esc_html__('success','travelami'), 'uid'=>$tzbooking_uid,'time'=>$tzbooking_time,'tourdata'=>$tzbooking_product_data ) );
+        $tzbooking_cart_info = array(
+            'adults'        => $tzbooking_adults,
+            'kids'          => $tzbooking_kids,
+            'fnr'           => $tzbooking_fnr,
+            'name_combo'    => $tzbooking_name_combo,
+            'people_combo'  => $tzbooking_people_combo,
+            'price_combo'   => $tzbooking_price_combo,
+            'price_adults'  => $tzbooking_price_adults,
+            'price_child'   => $tzbooking_price_child,
+            'price_fnr'     => $tzbooking_price_fnr,
+            'total_price'   => $total_price,
+            'total_adults'  => $tzbooking_total_adults,
+            'total_kids'    => $tzbooking_total_kids,
+            'total_fnr'     => $tzbooking_total_fnr,
+            'product_id'    => $tzbooking_product_id,
+            'date'          => $tzbooking_date,
+            'time'          => $tzbooking_time,
+            'first_name'    => $tzbooking_first_name,
+            'last_name'     => $tzbooking_last_name,
+            'email'         => $tzbooking_email,
+            'phone'         => $tzbooking_phone,
+        );
+
+        TZbooking_Session_Cart::tzbooking_set( $tzbooking_uid, $tzbooking_cart_info );
+        wp_send_json( array( 'success'=>1 ) );
     }
 }
 
@@ -2279,6 +2285,7 @@ if ( ! function_exists( 'tzbooking_product_submit_booking' ) ) {
             $tzbooking_order_info['total_price'] 	= round($tzbooking_cart_data['total_price']*(100-$tzbooking_discount)/100);
             $tzbooking_order_info['total_adults'] 	= $tzbooking_cart_data['adults'];
             $tzbooking_order_info['total_kids'] 		= $tzbooking_cart_data['kids'];
+            $tzbooking_order_info['total_fnr'] 		= $tzbooking_cart_data['fnr'];
             $tzbooking_order_info['payment_method']  = $tzbooking_payment_method;
             $tzbooking_order_info['status'] 			= 'new'; // new
             $tzbooking_order_info['deposit_paid'] 	= 1;

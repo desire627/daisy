@@ -34,6 +34,7 @@ if($tzbooking_cart_check == false){
         /*  Number  */
         $tzbooking_adults         = $tzbooking_product_data['adults'];
         $tzbooking_kids           = $tzbooking_product_data['kids'];
+        $tzbooking_fnr            = $tzbooking_product_data['fnr'];
         /*  Price  */
         if(isset($tzbooking_product_data['price_adults'])){
             $tzbooking_price_adults   = $tzbooking_product_data['price_adults'];
@@ -41,37 +42,46 @@ if($tzbooking_cart_check == false){
         if(isset($tzbooking_product_data['price_child'])){
             $tzbooking_price_kids     = $tzbooking_product_data['price_child'];
         }
+        if(isset($tzbooking_product_data['price_fnr'])){
+            $tzbooking_price_fnr      = $tzbooking_product_data['price_fnr'];
+        }
         /*  Total  */
         $tzbooking_total_price    = $tzbooking_product_data['total_price'];
         $tzbooking_total_adults   = $tzbooking_product_data['total_adults'];
-
         $tzbooking_total_kids     = $tzbooking_product_data['total_kids'];
+        $tzbooking_total_fnr      = $tzbooking_product_data['total_fnr'];
     } else {
         /*  Number  */
         $tzbooking_adults         = ( isset( $_REQUEST['number_adults'] ) ) ? $_REQUEST['number_adults'] : 0;
         $tzbooking_kids           = ( isset( $_REQUEST['number_children'] ) ) ? $_REQUEST['number_children'] : 0;
+        $tzbooking_fnr            = ( isset( $_REQUEST['number_fnr'] ) ) ? $_REQUEST['number_fnr'] : 0;
 
         /*  Price  */
         $tzbooking_price_adults   = ( isset( $_REQUEST['price_adults'] ) ) ? $_REQUEST['price_adults'] : 0;
         $tzbooking_price_kids     = ( isset( $_REQUEST['price_child'] ) ) ? $_REQUEST['price_child'] : 0;
+        $tzbooking_price_fnr      = ( isset( $_REQUEST['price_fnr'] ) ) ? $_REQUEST['price_fnr'] : 0;
         /*  Total  */
-        $tzbooking_total_price    = tzbooking_product_calc_product_price( $tzbooking_product_id, $tzbooking_date, $tzbooking_adults, $tzbooking_kids );
+        $tzbooking_total_price    = tzbooking_product_calc_product_price( $tzbooking_product_id, $tzbooking_date, $tzbooking_adults, $tzbooking_kids, $tzbooking_fnr );
 
-        $tzbooking_total_adults   = $tzbooking_price_adults*$tzbooking_adults;
-        $tzbooking_total_kids     = $tzbooking_price_kids*$tzbooking_kids;
+        $tzbooking_total_adults   = $tzbooking_price_adults * $tzbooking_adults;
+        $tzbooking_total_kids     = $tzbooking_price_kids * $tzbooking_kids;
+        $tzbooking_total_fnr      = $tzbooking_price_fnr * $tzbooking_fnr;
 
         $tzbooking_product_data      = array(
             'adults'        => $tzbooking_adults,
             'kids'          => $tzbooking_kids,
+            'fnr'           => $tzbooking_fnr,
             'name_combo'    => '',
             'people_combo'  => '',
             'price_combo'   => '',
             'price_adults'  => $tzbooking_price_adults,
             'price_child'   => $tzbooking_price_kids,
+            'price_fnr'     => $tzbooking_price_fnr,
             'total_price'   => $tzbooking_total_price,
             'total_adults'  => $tzbooking_total_adults,
             'total_kids'    => $tzbooking_total_kids,
-            'product_id'       => $tzbooking_product_id,
+            'total_fnr'     => $tzbooking_total_fnr,
+            'product_id'    => $tzbooking_product_id,
             'date'          => $tzbooking_date,
             'time'          => $tzbooking_time,
             'first_name'    => $tzbooking_first_name,
@@ -109,9 +119,9 @@ if($tzbooking_cart_check == false){
                     <table class="table table-striped cart-list tour add_bottom_30">
                         <thead><tr>
                             <th><?php echo esc_html__( 'Tour', 'travelami' ) ?></th>
-
                             <th class=""><?php echo esc_html__( 'Adults', 'travelami' ) ?></th>
                             <th class=""><?php echo esc_html__( 'Children', 'travelami' ) ?></th>
+                            <th class=""><?php echo esc_html__( 'FNR', 'travelami' ) ?></th>
                             <th><?php echo esc_html__( 'Date', 'travelami' ) ?></th>
                             <th><?php echo esc_html__( 'Total', 'travelami' ) ?></th>
                         </tr></thead>
@@ -124,7 +134,6 @@ if($tzbooking_cart_check == false){
                                     </p>
                                 </div>
                             </td>
-
                             <td>
                                 <div class="input-number-ticket uk-position-relative">
                                     <input class="input-number qty2 form-control product-adults" name="adults" type="text" value="<?php echo esc_attr( $tzbooking_adults ); ?>" data-min="0" data-max="<?php echo esc_attr($tzbooking_max_adults); ?>" readonly="true"/>
@@ -134,6 +143,12 @@ if($tzbooking_cart_check == false){
                             <td>
                                 <div class="input-number-ticket uk-position-relative">
                                     <input class="input-number qty2 form-control product-kids" name="kids" type="text" value="<?php echo esc_attr( $tzbooking_kids ); ?>" data-min="0" data-max="<?php echo esc_attr($tzbooking_max_kids); ?>" readonly="true"/>
+                                    <span class="input-number-decrement"><i class="fas fa-caret-down"></i></span><span class="input-number-increment"><i class="fas fa-caret-up"></i></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-number-ticket uk-position-relative">
+                                    <input class="input-number qty2 form-control product-fnr" name="fnr" type="text" value="<?php echo esc_attr( $tzbooking_fnr ); ?>" data-min="0" data-max="10000" readonly="true"/>
                                     <span class="input-number-decrement"><i class="fas fa-caret-down"></i></span><span class="input-number-increment"><i class="fas fa-caret-up"></i></span>
                                 </div>
                             </td>
@@ -161,6 +176,7 @@ if($tzbooking_cart_check == false){
                             <td></td>
                             <td></td>
                             <td></td>
+                            <td></td>
                             <td>
                                 <p><strong><?php if ( ! empty( $tzbooking_total_price ) ) echo tzbooking_price($tzbooking_total_price);?></strong></p>
                             </td>
@@ -169,6 +185,7 @@ if($tzbooking_cart_check == false){
                             <th>
                                 <strong><?php echo esc_html__( 'Total', 'travelami' ) ?></strong>
                             </th>
+                            <td></td>
                             <td></td>
                             <td></td>
                             <td></td>
@@ -213,9 +230,11 @@ if($tzbooking_cart_check == false){
                     <input type="hidden" name="price_combo" value="">
                     <input type="hidden" name="price_adults" value="<?php echo esc_attr( $tzbooking_price_adults ) ?>">
                     <input type="hidden" name="price_child" value="<?php echo esc_attr( $tzbooking_price_child ) ?>">
+                    <input type="hidden" name="price_fnr" value="<?php echo esc_attr( $tzbooking_price_fnr ) ?>">
                     <input type="hidden" name="total_price" value="<?php echo esc_attr( $tzbooking_total_price ) ?>">
                     <input type="hidden" name="total_adults" value="<?php echo esc_attr( $tzbooking_total_adults ) ?>">
-                    <input type="hidden" name="total_kids"  value="<?php echo esc_attr( $tzbooking_total_kids ) ?>">
+                    <input type="hidden" name="total_kids" value="<?php echo esc_attr( $tzbooking_total_kids ) ?>">
+                    <input type="hidden" name="total_fnr" value="<?php echo esc_attr( $tzbooking_total_fnr ) ?>">
                     <input type="hidden" name="cart_delete"  value="<?php echo esc_attr( tzbooking_get_product_cart_page() ); ?>">
                     <?php wp_nonce_field( 'product_update_cart' ); ?>
                 </div>
